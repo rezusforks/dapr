@@ -61,10 +61,7 @@ pluggable_kafka-bindings \
 tracingapp \
 configurationapp \
 workflowsapp \
-<<<<<<< HEAD
 searchvector \
-=======
->>>>>>> upstream/release-1.18
 operatorscopes \
 
 # PERFORMANCE test app list
