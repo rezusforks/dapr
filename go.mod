@@ -353,7 +353,11 @@ require (
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/k0kubun/pp v3.0.1+incompatible // indirect
+<<<<<<< HEAD
 	github.com/klauspost/compress v1.20.3 // indirect
+=======
+	github.com/klauspost/compress v1.20.2 // indirect
+>>>>>>> upstream/release-1.18
 	github.com/knadh/koanf v1.4.1 // indirect
 	github.com/kr/fs v0.1.0 // indirect
 	github.com/kubemq-io/kubemq-go v1.7.9 // indirect

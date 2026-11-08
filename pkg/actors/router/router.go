@@ -307,12 +307,27 @@ func (r *router) callActor(ctx context.Context, req *internalv1pb.InternalInvoke
 		return nil, err
 	}
 
+<<<<<<< HEAD
 	if IsRetryableRemoteError(err) {
 		// The pooled connection is not destroyed here because other in-flight
 		// calls share it. The caller retries, resolving the actor host again,
 		// and reuses the pooled connection for that address and app.
 		attempt := resiliency.GetAttempt(ctx)
 		return res, fmt.Errorf("failed to invoke target %s after %d retries. Error: %w", lar.Address, attempt-1, err)
+=======
+	attempt := resiliency.GetAttempt(ctx)
+	s, ok := status.FromError(err)
+	if ok {
+		if s.Code() == codes.Unavailable ||
+			(s.Code() == codes.Internal &&
+				(s.Message() == "error invoke actor method: remote actor moved" ||
+					strings.HasSuffix(s.Message(), ": placement is disseminating"))) {
+			// The pooled connection is not destroyed here because other in-flight
+			// calls share it. The caller retries, resolving the actor host again,
+			// and reuses the pooled connection for that address and app.
+			return res, fmt.Errorf("failed to invoke target %s after %d retries. Error: %w", lar.Address, attempt-1, err)
+		}
+>>>>>>> upstream/release-1.18
 	}
 
 	return res, backoff.Permanent(err)
