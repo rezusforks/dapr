@@ -27,6 +27,10 @@ import (
 	"github.com/dapr/dapr/tests/integration/framework"
 	"github.com/dapr/dapr/tests/integration/framework/process/daprd"
 	"github.com/dapr/dapr/tests/integration/framework/process/http/app"
+<<<<<<< HEAD
+=======
+	"github.com/dapr/dapr/tests/integration/framework/process/placement"
+>>>>>>> upstream/release-1.18
 	"github.com/dapr/dapr/tests/integration/framework/process/scheduler"
 	"github.com/dapr/dapr/tests/integration/framework/process/sentry"
 	"github.com/dapr/dapr/tests/integration/suite"
@@ -43,6 +47,10 @@ func init() {
 // the new app.
 type differentapp struct {
 	sentry *sentry.Sentry
+<<<<<<< HEAD
+=======
+	place  *placement.Placement
+>>>>>>> upstream/release-1.18
 	sched  *scheduler.Scheduler
 	caller *daprd.Daprd
 	old    *daprd.Daprd
@@ -54,10 +62,17 @@ type differentapp struct {
 
 func (d *differentapp) Setup(t *testing.T) []framework.Option {
 	d.sentry = sentry.New(t)
+<<<<<<< HEAD
 	d.sched = scheduler.New(t,
 		scheduler.WithSentry(d.sentry),
 		scheduler.WithID("dapr-scheduler-server-0"),
 		scheduler.WithPlacementEnabled(true),
+=======
+	d.place = placement.New(t, placement.WithSentry(t, d.sentry))
+	d.sched = scheduler.New(t,
+		scheduler.WithSentry(d.sentry),
+		scheduler.WithID("dapr-scheduler-server-0"),
+>>>>>>> upstream/release-1.18
 	)
 
 	oldApp := app.New(t,
@@ -77,6 +92,10 @@ func (d *differentapp) Setup(t *testing.T) []framework.Option {
 		return append([]daprd.Option{
 			daprd.WithSentry(t, d.sentry),
 			daprd.WithInMemoryActorStateStore("mystore"),
+<<<<<<< HEAD
+=======
+			daprd.WithPlacementAddresses(d.place.Address()),
+>>>>>>> upstream/release-1.18
 			daprd.WithScheduler(d.sched),
 		}, extra...)
 	}
@@ -89,11 +108,19 @@ func (d *differentapp) Setup(t *testing.T) []framework.Option {
 	)...)
 
 	return []framework.Option{
+<<<<<<< HEAD
 		framework.WithProcesses(d.sentry, d.sched, oldApp, newApp, d.caller),
+=======
+		framework.WithProcesses(d.sentry, d.place, d.sched, oldApp, newApp, d.caller),
+>>>>>>> upstream/release-1.18
 	}
 }
 
 func (d *differentapp) Run(t *testing.T, ctx context.Context) {
+<<<<<<< HEAD
+=======
+	d.place.WaitUntilRunning(t, ctx)
+>>>>>>> upstream/release-1.18
 	d.sched.WaitUntilRunning(t, ctx)
 	d.caller.WaitUntilRunning(t, ctx)
 
