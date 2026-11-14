@@ -240,12 +240,8 @@ func (p *ConnectionPool) CloseIdle() int {
 	return closed
 }
 
-<<<<<<< HEAD
 // Purge connections that have been idle for longer than maxConnIdle,
 // returning the number of connections that were closed.
-=======
-// Purge connections that have been idle for longer than maxConnIdle.
->>>>>>> upstream/release-1.18
 // Note that this method should not be called by multiple goroutines at the same time.
 func (p *ConnectionPool) Purge() int {
 	// Need a write lock as we modify the slice
