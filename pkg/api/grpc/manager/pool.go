@@ -368,21 +368,6 @@ func (p *RemoteConnectionPool) CloseIdleWithPrefix(prefix, except string) {
 	})
 }
 
-// CloseIdleWithPrefix closes the idle connections of every pool whose key starts
-// with prefix, except the pool stored under except.
-func (p *RemoteConnectionPool) CloseIdleWithPrefix(prefix, except string) {
-	p.pool.Range(func(key any, item any) bool {
-		k, ok := key.(string)
-		if !ok || k == except || !strings.HasPrefix(k, prefix) {
-			return true
-		}
-		if closed := item.(*ConnectionPool).CloseIdle(); closed > 0 {
-			log.Debugf("Closed %d idle gRPC connection(s) to %s", closed, k)
-		}
-		return true
-	})
-}
-
 func (p *RemoteConnectionPool) loadOrStoreItem(address string) *ConnectionPool {
 	item, ok := p.pool.Load(address)
 	if !ok {
