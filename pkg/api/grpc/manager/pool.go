@@ -240,12 +240,8 @@ func (p *ConnectionPool) CloseIdle() int {
 	return closed
 }
 
-<<<<<<< HEAD
 // Purge connections that have been idle for longer than maxConnIdle,
 // returning the number of connections that were closed.
-=======
-// Purge connections that have been idle for longer than maxConnIdle.
->>>>>>> upstream/release-1.18
 // Note that this method should not be called by multiple goroutines at the same time.
 func (p *ConnectionPool) Purge() int {
 	// Need a write lock as we modify the slice
@@ -352,21 +348,6 @@ func (p *RemoteConnectionPool) Purge() {
 	p.pool.Range(func(address any, item any) bool {
 		if purged := item.(*ConnectionPool).Purge(); purged > 0 {
 			log.Debugf("Purged %d expired gRPC connection(s) to %s", purged, address)
-		}
-		return true
-	})
-}
-
-// CloseIdleWithPrefix closes the idle connections of every pool whose key starts
-// with prefix, except the pool stored under except.
-func (p *RemoteConnectionPool) CloseIdleWithPrefix(prefix, except string) {
-	p.pool.Range(func(key any, item any) bool {
-		k, ok := key.(string)
-		if !ok || k == except || !strings.HasPrefix(k, prefix) {
-			return true
-		}
-		if closed := item.(*ConnectionPool).CloseIdle(); closed > 0 {
-			log.Debugf("Closed %d idle gRPC connection(s) to %s", closed, k)
 		}
 		return true
 	})
