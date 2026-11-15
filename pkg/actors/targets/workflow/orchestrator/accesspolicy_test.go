@@ -21,6 +21,11 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+<<<<<<< HEAD
+=======
+	"google.golang.org/protobuf/types/known/timestamppb"
+	"google.golang.org/protobuf/types/known/wrapperspb"
+>>>>>>> upstream/release-1.18
 
 	workflowacl "github.com/dapr/dapr/pkg/acl/workflow"
 	wfaclapi "github.com/dapr/dapr/pkg/apis/workflowaccesspolicy/v1alpha1"
@@ -135,3 +140,66 @@ func Test_checkAccessPolicy_completionSender(t *testing.T) {
 		assert.Equal(t, codes.PermissionDenied, status.Code(err))
 	})
 }
+<<<<<<< HEAD
+=======
+
+func taskScheduledEvent(id int32) *backend.HistoryEvent {
+	return &protos.HistoryEvent{
+		EventId:   id,
+		Timestamp: timestamppb.Now(),
+		EventType: &protos.HistoryEvent_TaskScheduled{
+			TaskScheduled: &protos.TaskScheduledEvent{Name: "act"},
+		},
+	}
+}
+
+func taskCompletedEvent(scheduled int32) *backend.HistoryEvent {
+	return &protos.HistoryEvent{
+		EventId:   -1,
+		Timestamp: timestamppb.Now(),
+		EventType: &protos.HistoryEvent_TaskCompleted{
+			TaskCompleted: &protos.TaskCompletedEvent{
+				TaskScheduledId: scheduled,
+				Result:          wrapperspb.String(`"done"`),
+			},
+		},
+	}
+}
+
+func taskFailedEvent(scheduledID int32) *backend.HistoryEvent {
+	return &protos.HistoryEvent{
+		EventId:   -1,
+		Timestamp: timestamppb.Now(),
+		EventType: &protos.HistoryEvent_TaskFailed{
+			TaskFailed: &protos.TaskFailedEvent{TaskScheduledId: scheduledID},
+		},
+	}
+}
+
+func timerCreatedEvent(id int32) *backend.HistoryEvent {
+	return &protos.HistoryEvent{EventId: id, EventType: &protos.HistoryEvent_TimerCreated{TimerCreated: &protos.TimerCreatedEvent{}}}
+}
+
+func firedEvent(id int32) *backend.HistoryEvent {
+	return &protos.HistoryEvent{EventId: -1, EventType: &protos.HistoryEvent_TimerFired{TimerFired: &protos.TimerFiredEvent{TimerId: id}}}
+}
+
+func childCreatedEvent(id int32) *backend.HistoryEvent {
+	return &protos.HistoryEvent{EventId: id, EventType: &protos.HistoryEvent_ChildWorkflowInstanceCreated{
+		ChildWorkflowInstanceCreated: &protos.ChildWorkflowInstanceCreatedEvent{InstanceId: "child"},
+	}}
+}
+
+func childCompletedEvent(scheduled int32) *backend.HistoryEvent {
+	return &protos.HistoryEvent{
+		EventId:   -1,
+		Timestamp: timestamppb.Now(),
+		EventType: &protos.HistoryEvent_ChildWorkflowInstanceCompleted{
+			ChildWorkflowInstanceCompleted: &protos.ChildWorkflowInstanceCompletedEvent{
+				TaskScheduledId: scheduled,
+				Result:          wrapperspb.String(`"done"`),
+			},
+		},
+	}
+}
+>>>>>>> upstream/release-1.18

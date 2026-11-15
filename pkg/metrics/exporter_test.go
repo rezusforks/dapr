@@ -15,7 +15,10 @@ package metrics
 
 import (
 	"context"
+<<<<<<< HEAD
 	"io"
+=======
+>>>>>>> upstream/release-1.18
 	"net"
 	"net/http"
 	"strconv"
@@ -122,6 +125,7 @@ func TestMetricsExporter(t *testing.T) {
 			assert.Equal(t, "GET, HEAD", allow, method)
 		}
 	})
+<<<<<<< HEAD
 
 	t.Run("serves extra handlers on their own paths", func(t *testing.T) {
 		ln, err := net.Listen("tcp", "127.0.0.1:0")
@@ -178,4 +182,6 @@ func TestMetricsExporter(t *testing.T) {
 		assert.Equal(t, http.StatusOK, status)
 		assert.NotEqual(t, "extra", body)
 	})
+=======
+>>>>>>> upstream/release-1.18
 }

@@ -55,9 +55,14 @@ func init() {
 // A result for a pending task sent by any app other than the one the task
 // was dispatched to never reaches the workflow.
 //
+<<<<<<< HEAD
 // It runs with history signing on. completionnosigning and
 // completionfastpath run the same test without signing and on the
 // WorkflowsFastPath entry, which admits completions through a separate path.
+=======
+// It runs with history signing on. completionnosigning runs the same test
+// without signing.
+>>>>>>> upstream/release-1.18
 type completion struct {
 	workflow *workflow.Workflow
 	parentID string

@@ -28,6 +28,7 @@ import (
 	"github.com/dapr/durabletask-go/api"
 	"github.com/dapr/durabletask-go/api/protos"
 	"github.com/dapr/durabletask-go/backend"
+	"github.com/dapr/durabletask-go/backend/runtimestate"
 )
 
 // isLocalSyntheticFailure reports whether e is a failure event this app authored
@@ -120,8 +121,23 @@ func (o *orchestrator) checkCompletionSender(ctx context.Context, callerAppID st
 		return nil
 	}
 
+<<<<<<< HEAD
 	step, _ := resolves(e)
 	dispatch := state.FindHistoryEventByID(step.id)
+=======
+	kind := "task"
+	taskID, _, isActivity := activityResolution(e)
+	if !isActivity {
+		kind = "child workflow"
+		if c := e.GetChildWorkflowInstanceCompleted(); c != nil {
+			taskID = c.GetTaskScheduledId()
+		} else {
+			taskID = e.GetChildWorkflowInstanceFailed().GetTaskScheduledId()
+		}
+	}
+
+	dispatch := state.FindHistoryEventByID(taskID)
+>>>>>>> upstream/release-1.18
 	if dispatch.GetTaskScheduled() != nil || dispatch.GetChildWorkflowInstanceCreated() != nil {
 		target := dispatch.GetRouter().GetTargetAppID()
 		if target == "" {
@@ -132,6 +148,7 @@ func (o *orchestrator) checkCompletionSender(ctx context.Context, callerAppID st
 		}
 	}
 
+<<<<<<< HEAD
 	// A child's result that admission acknowledges without effect, such as
 	// one from before a ContinueAsNew or for a finished workflow, or answers
 	// as not found, passes so the child stops re-sending it. Not an
@@ -159,6 +176,25 @@ func (o *orchestrator) checkCompletionSender(ctx context.Context, callerAppID st
 // for all other operations history is nil and any rule with a `requires`
 // block will fail-closed.
 func (o *orchestrator) workflowNameForOperation(ctx context.Context, method string, data []byte, preLoadedMeta *backend.WorkflowMetadata) (string, *protos.PropagatedHistory, error) {
+=======
+	// A child's result that admission acknowledges without effect, or answers
+	// as not found, passes so the child stops re-sending it: a tombstoned or
+	// finished workflow, or a straggler from another child or a previous
+	// execution. Not an activity's: dropping one releases the instance ID
+	// reuse guard, and its sender falls back to a result reminder, which
+	// admission checks against the dispatched app.
+	if !isActivity && (state.HasTamperMarker() || runtimestate.IsCompleted(o.rstate) ||
+		o.stragglerReason(state, e, senderFromMetadata(md)) != "") {
+		return nil
+	}
+
+	log.Warnf("Workflow actor '%s': workflow access policy denied %s result for task %d from app '%s', which the task was not dispatched to", o.actorID, kind, taskID, callerAppID)
+	diag.DefaultMonitoring.WorkflowACLActionDenied(callerAppID, string(workflowacl.OperationTypeWorkflow), todo.AddWorkflowEventMethod)
+	return status.Errorf(codes.PermissionDenied, "%s: app '%s' was not dispatched task %d of workflow instance '%s'", workflowacl.DeniedMessageBase, callerAppID, taskID, o.actorID)
+}
+
+func (o *orchestrator) workflowNameForOperation(ctx context.Context, method string, data []byte, preLoadedMeta *backend.WorkflowMetadata) (string, error) {
+>>>>>>> upstream/release-1.18
 	if method == todo.CreateWorkflowInstanceMethod {
 		return workflowacl.WorkflowNameFromCreateRequest(data)
 	}
