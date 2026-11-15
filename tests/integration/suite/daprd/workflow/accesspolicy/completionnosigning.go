@@ -29,5 +29,9 @@ func init() {
 type completionnosigning struct{ completion }
 
 func (c *completionnosigning) Setup(t *testing.T) []framework.Option {
+<<<<<<< HEAD
 	return c.setup(t, workflow.WithSigning(false))
+=======
+	return c.setup(t, workflow.WithSigningDisabledN(0), workflow.WithSigningDisabledN(1))
+>>>>>>> upstream/release-1.18
 }

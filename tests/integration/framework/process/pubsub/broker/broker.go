@@ -57,9 +57,14 @@ func WithPausable() Option {
 	}
 }
 
+<<<<<<< HEAD
 // WithRecordPublishes records the messages daprd publishes to the broker, such
 // as to a dead letter topic, for NextPublish to return, instead of handing
 // them to the in-memory pubsub.
+=======
+// WithRecordPublishes records the messages daprd publishes to the broker for
+// NextPublish to return, instead of handing them to the in-memory pubsub.
+>>>>>>> upstream/release-1.18
 func WithRecordPublishes() Option {
 	return func(o *brokerOptions) {
 		o.recordPublishes = true
@@ -153,6 +158,7 @@ func (b *Broker) PublishHelloWorld(topic string) <-chan *compv1.PullMessagesRequ
 	return b.pmrReqCh
 }
 
+<<<<<<< HEAD
 // helloWorldCloudEvent returns a cloud event with ID id, published to topic.
 func helloWorldCloudEvent(id, topic string) []byte {
 	return fmt.Appendf(nil,
@@ -203,6 +209,8 @@ func (b *Broker) Acks(t *testing.T, ctx context.Context, n int) map[string]strin
 	return acks
 }
 
+=======
+>>>>>>> upstream/release-1.18
 // NextPublish waits for daprd to publish a message to the broker and returns
 // the publish request the component received, including its metadata. A bulk
 // publish is received as one publish per entry. The broker must have been
@@ -224,6 +232,7 @@ func (b *Broker) NextPublish(t *testing.T, ctx context.Context) *contribpubsub.P
 	return nil
 }
 
+<<<<<<< HEAD
 // NextPublishedCloudEvent waits for daprd to publish a cloud event to the
 // broker, such as to a dead letter topic, and returns its topic and ID. The
 // broker must have been created WithRecordPublishes.
@@ -238,6 +247,8 @@ func (b *Broker) NextPublishedCloudEvent(t *testing.T, ctx context.Context) (str
 	return req.Topic, ce.ID
 }
 
+=======
+>>>>>>> upstream/release-1.18
 // DropStream ends the in-flight PullMessages stream, cancelling the context
 // the component gave the runtime's inbound handler. Stands in for a Kafka
 // consumer group rebalance.

@@ -115,6 +115,7 @@ func (o *orchestrator) classifyEvent(e *backend.HistoryEvent, state *wfenginesta
 	// instance other than the child this generation created for N, or from a
 	// child or activity a different execution created or dispatched, is a
 	// straggler from a previous generation and is acked without effect.
+<<<<<<< HEAD
 	if sender.instanceID != "" {
 		if created := childCreatedFor(state.History, e); created != nil && created.GetInstanceId() != sender.instanceID {
 			return admission{reason: "the task's current child is '" + created.GetInstanceId() + "'"}
@@ -124,6 +125,10 @@ func (o *orchestrator) classifyEvent(e *backend.HistoryEvent, state *wfenginesta
 		if cur := o.getExecutionStartedEvent(state).GetWorkflowInstance().GetExecutionId().GetValue(); cur != "" && cur != sender.parentExecutionID {
 			return admission{reason: "it was created or dispatched under another execution"}
 		}
+=======
+	if reason := o.stragglerReason(state, e, sender); reason != "" {
+		return ackDropped(reason, false)
+>>>>>>> upstream/release-1.18
 	}
 
 	// Fold only sender-retried ACTIVITY completions against a healthy,
@@ -380,6 +385,60 @@ func (o *orchestrator) verifyAndAbsorbAttestation(ctx context.Context, state *wf
 	return api.ErrInstanceNotFound
 }
 
+<<<<<<< HEAD
+=======
+// stragglerReason reports why e, delivered by sender, is a straggler from
+// another child or a previous execution, or "" when it is not.
+func (o *orchestrator) stragglerReason(state *wfenginestate.State, e *backend.HistoryEvent, sender completionSender) string {
+	if sender.instanceID != "" {
+		if created := childCreatedFor(state.History, e); created != nil && created.GetInstanceId() != sender.instanceID {
+			return "the task's current child is '" + created.GetInstanceId() + "'"
+		}
+	}
+	if sender.parentExecutionID != "" {
+		if cur := o.getExecutionStartedEvent(state).GetWorkflowInstance().GetExecutionId().GetValue(); cur != "" && cur != sender.parentExecutionID {
+			return "it was created under a previous execution"
+		}
+	}
+	return ""
+}
+
+// childCreatedFor returns the ChildWorkflowInstanceCreated event this
+// history holds for the task a child completion resolves, or nil.
+func childCreatedFor(history []*backend.HistoryEvent, e *backend.HistoryEvent) *protos.ChildWorkflowInstanceCreatedEvent {
+	var taskID int32
+	switch {
+	case e.GetChildWorkflowInstanceCompleted() != nil:
+		taskID = e.GetChildWorkflowInstanceCompleted().GetTaskScheduledId()
+	case e.GetChildWorkflowInstanceFailed() != nil:
+		taskID = e.GetChildWorkflowInstanceFailed().GetTaskScheduledId()
+	default:
+		return nil
+	}
+	for _, h := range history {
+		if c := h.GetChildWorkflowInstanceCreated(); c != nil && h.GetEventId() == taskID {
+			return c
+		}
+	}
+	return nil
+}
+
+// senderFromMetadata extracts the delivering child's identity from request
+// metadata; zero for senders that do not carry it.
+func senderFromMetadata(md map[string]*internalsv1pb.ListStringValue) completionSender {
+	first := func(key string) string {
+		if v, ok := md[key]; ok && len(v.GetValues()) > 0 {
+			return v.GetValues()[0]
+		}
+		return ""
+	}
+	return completionSender{
+		instanceID:        first(todo.MetadataSenderInstanceID),
+		parentExecutionID: first(todo.MetadataParentExecutionID),
+	}
+}
+
+>>>>>>> upstream/release-1.18
 // activityResolution returns the task id and TaskExecutionId an activity
 // completion resolves; ok is false for every other event.
 func activityResolution(e *backend.HistoryEvent) (taskID int32, execID string, ok bool) {
